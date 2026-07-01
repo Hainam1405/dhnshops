@@ -14,7 +14,7 @@ const display = Space_Grotesk({
 export const metadata: Metadata = {
   title: { default: `${SITE.name} — ${SITE.tagline}`, template: `%s — ${SITE.name}` },
   description: SITE.description,
-  metadataBase: new URL("https://aether.studio"),
+  metadataBase: new URL("https://dhnshops.com"),
   openGraph: { title: SITE.name, description: SITE.description, type: "website" },
 };
 
