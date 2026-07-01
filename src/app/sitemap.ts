@@ -1,0 +1,15 @@
+import type { MetadataRoute } from "next";
+import { getAllProductSlugs, getCategories } from "@/lib/products";
+
+const BASE = "https://aether.studio";
+
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const [slugs, categories] = await Promise.all([getAllProductSlugs(), getCategories()]);
+
+  return [
+    { url: BASE, priority: 1 },
+    { url: `${BASE}/shop`, priority: 0.9 },
+    ...categories.map((c) => ({ url: `${BASE}/collections/${c.slug}`, priority: 0.8 })),
+    ...slugs.map((s) => ({ url: `${BASE}/products/${s}`, priority: 0.7 })),
+  ];
+}
