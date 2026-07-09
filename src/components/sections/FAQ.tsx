@@ -25,7 +25,7 @@ const FAQS: QA[] = [
   },
   {
     q: "What's your returns policy?",
-    a: "Not the right fit? Return any unworn item within 30 days for a full refund — no questions asked. Reach us any time at hello@aether.studio.",
+    a: "Not the right fit? Return any unworn item within 30 days for a full refund — no questions asked. Reach us any time at hello@dhnshops.com.",
   },
 ];
 

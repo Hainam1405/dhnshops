@@ -10,7 +10,7 @@ export const SITE = {
   currency: "USD",
   /** Free shipping threshold, in USD cents. */
   freeShippingThreshold: 7500,
-  email: "hello@aether.studio",
+  email: "hello@dhnshops.com",
   social: {
     instagram: "https://instagram.com",
     tiktok: "https://tiktok.com",
@@ -21,7 +21,7 @@ export const SITE = {
 /** Primary navigation links. */
 export const NAV_LINKS = [
   { label: "Shop", href: "/shop" },
-  { label: "Tees", href: "/collections/tees" },
-  { label: "Hoodies", href: "/collections/hoodies" },
-  { label: "Drops", href: "/collections/limited" },
+  { label: "Graphic Tees", href: "/collections/tees" },
+  { label: "Halloween & Holiday", href: "/collections/seasonal" },
+  { label: "Fan & Bootleg", href: "/collections/bootleg" },
 ] as const;
