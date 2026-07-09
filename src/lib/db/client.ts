@@ -14,6 +14,33 @@ import { neon, type NeonQueryFunction } from "@neondatabase/serverless";
 
 export const hasDb = Boolean(process.env.DATABASE_URL);
 
+/**
+ * Bump when `@/lib/data/seed` changes in a way that must reach an already-seeded
+ * database. The sync below runs once per version, then never again — so products
+ * created through /admin survive every deploy.
+ */
+const SEED_VERSION = "2026-07-real-catalog";
+
+/**
+ * Ids from the original placeholder catalog (the placehold.co sample products).
+ * They are removed by the sync. Listing them explicitly — rather than deleting
+ * everything that is not in the seed — guarantees a future SEED_VERSION bump can
+ * never delete a product an admin created.
+ */
+const LEGACY_PRODUCT_IDS = [
+  "null-vector-tee",
+  "event-horizon-hoodie",
+  "chromatic-drift-tee",
+  "liminal-space-longsleeve",
+  "signal-lost-hoodie",
+  "photon-wash-tee",
+  "deep-field-crewneck",
+  "ghost-protocol-tee",
+];
+
+/** Categories from the placeholder catalog that the real one no longer uses. */
+const LEGACY_CATEGORY_IDS = ["hoodies", "limited"];
+
 let client: NeonQueryFunction<false, false> | null = null;
 
 export function getSql(): NeonQueryFunction<false, false> {
@@ -58,14 +85,26 @@ async function bootstrap(): Promise<void> {
       data jsonb NOT NULL,
       created_at timestamptz NOT NULL DEFAULT now()
     )`;
+  await sql`
+    CREATE TABLE IF NOT EXISTS app_meta (
+      key text PRIMARY KEY,
+      value text NOT NULL
+    )`;
 
-  await seedIfEmpty(sql);
+  await syncSeed(sql);
 }
 
-/** Seed from the sample catalog only when the products table is empty. */
-async function seedIfEmpty(sql: NeonQueryFunction<false, false>): Promise<void> {
-  const rows = (await sql`SELECT count(*)::int AS n FROM products`) as { n: number }[];
-  if (rows[0]?.n > 0) return;
+/**
+ * Bring the catalog up to SEED_VERSION, exactly once per version.
+ *
+ * Every statement is idempotent (upsert / delete-by-id), so two serverless
+ * instances racing through this converge on the same rows. The version marker is
+ * written last: a crash midway just means the next boot retries.
+ */
+async function syncSeed(sql: NeonQueryFunction<false, false>): Promise<void> {
+  const marker = (await sql`
+    SELECT value FROM app_meta WHERE key = 'seed_version'`) as { value: string }[];
+  if (marker[0]?.value === SEED_VERSION) return;
 
   const { products, categories } = await import("@/lib/data/seed");
 
@@ -74,7 +113,8 @@ async function seedIfEmpty(sql: NeonQueryFunction<false, false>): Promise<void> 
     await sql`
       INSERT INTO categories (id, data, sort_key)
       VALUES (${c.slug}, ${JSON.stringify(c)}::jsonb, ${i})
-      ON CONFLICT (id) DO NOTHING`;
+      ON CONFLICT (id) DO UPDATE
+        SET data = EXCLUDED.data, sort_key = EXCLUDED.sort_key`;
   }
 
   for (let i = 0; i < products.length; i++) {
@@ -83,6 +123,16 @@ async function seedIfEmpty(sql: NeonQueryFunction<false, false>): Promise<void> 
     await sql`
       INSERT INTO products (id, data, sort_key)
       VALUES (${id}, ${JSON.stringify(p)}::jsonb, ${i})
-      ON CONFLICT (id) DO NOTHING`;
+      ON CONFLICT (id) DO UPDATE
+        SET data = EXCLUDED.data, sort_key = EXCLUDED.sort_key, updated_at = now()`;
   }
+
+  // Retire the placeholder catalog. Named ids only — never "everything else".
+  await sql`DELETE FROM products WHERE id = ANY(${LEGACY_PRODUCT_IDS}::text[])`;
+  await sql`DELETE FROM categories WHERE id = ANY(${LEGACY_CATEGORY_IDS}::text[])`;
+
+  await sql`
+    INSERT INTO app_meta (key, value)
+    VALUES ('seed_version', ${SEED_VERSION})
+    ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value`;
 }
