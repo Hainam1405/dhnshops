@@ -21,7 +21,7 @@ const FAQS: QA[] = [
   },
   {
     q: "Do you ship worldwide?",
-    a: "Yes. We produce in 32 countries and ship to 200+. Free carbon-neutral shipping applies automatically once your cart passes the free-shipping threshold.",
+    a: "Yes. Your order is routed to the production hub nearest you, so most parcels ship domestically. Free shipping applies automatically once your cart passes $75 — below that it's a flat $7, shown at checkout before you pay.",
   },
   {
     q: "What's your returns policy?",
@@ -80,7 +80,7 @@ export function FAQ() {
             answered
           </h2>
           <p className="mt-5 max-w-xs text-muted">
-            Still unsure? Join the list — we send restock alerts and the occasional 15% code.
+            Still unsure? Join the list — we email when new designs land, and nothing else.
           </p>
           <EmailCapture className="mt-6 max-w-xs" />
         </div>

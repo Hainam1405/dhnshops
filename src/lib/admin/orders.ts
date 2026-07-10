@@ -88,6 +88,7 @@ async function writeOrders(orders: Order[]): Promise<void> {
   await fs.rename(tmp, FILE);
 }
 
+/** Orders placed before the rename still carry the legacy `AE-` prefix. */
 function genOrderId(existing: Order[]): string {
   let id = "";
   do {
@@ -96,7 +97,7 @@ function genOrderId(existing: Order[]): string {
       .toString(36)
       .toUpperCase()
       .padStart(3, "0");
-    id = `AE-${t}${r}`;
+    id = `DHN-${t}${r}`;
   } while (existing.some((o) => o.id === id));
   return id;
 }

@@ -15,7 +15,13 @@ function Row({ className }: { className?: string }) {
   );
 }
 
-/** Deterministic (SSR-safe) star rating using a clipped accent overlay. */
+/**
+ * Deterministic (SSR-safe) star rating using a clipped accent overlay.
+ *
+ * Renders nothing when `count` is 0: a product nobody has reviewed must not
+ * advertise "0.0 (0)" — that reads as a bug, and an empty star row reads as a
+ * bad rating. Callers can therefore pass a product's rating unconditionally.
+ */
 export function StarRating({
   rating,
   count,
@@ -27,6 +33,8 @@ export function StarRating({
   className?: string;
   showValue?: boolean;
 }) {
+  if (count === 0) return null;
+
   const pct = (Math.max(0, Math.min(5, rating)) / 5) * 100;
   return (
     <span className={cn("inline-flex items-center gap-2", className)}>

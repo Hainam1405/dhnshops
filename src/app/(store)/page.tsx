@@ -1,13 +1,11 @@
-import { getBestsellers, getCategories, getFeaturedProducts } from "@/lib/products";
+import { getCategories, getFeaturedProducts, getShowcaseProducts } from "@/lib/products";
 import { SITE } from "@/lib/config";
 import { Hero } from "@/components/sections/Hero";
 import { SectionHeading } from "@/components/sections/SectionHeading";
 import { CategoryTiles } from "@/components/sections/CategoryTiles";
 import { FeaturedScroll } from "@/components/sections/FeaturedScroll";
 import { BenefitStory } from "@/components/sections/BenefitStory";
-import { Stats } from "@/components/sections/Stats";
 import { FAQ } from "@/components/sections/FAQ";
-import { Testimonials } from "@/components/sections/Testimonials";
 import { TrustBar } from "@/components/sections/TrustBar";
 import { ProductGrid } from "@/components/shop/ProductGrid";
 import { Button } from "@/components/ui/Button";
@@ -16,14 +14,14 @@ import { Reveal } from "@/components/motion/Reveal";
 import { EmailCapture } from "@/components/layout/EmailCapture";
 
 export default async function Home() {
-  const [categories, bestsellers, featured] = await Promise.all([
+  const [categories, showcase, featured] = await Promise.all([
     getCategories(),
-    getBestsellers(8),
+    getShowcaseProducts(8),
     getFeaturedProducts(),
   ]);
 
   // Source the story visuals from the live catalog so they stay on-brand.
-  const imgPool = [...bestsellers, ...featured]
+  const imgPool = [...showcase, ...featured]
     .map((p) => p.images?.[0])
     .filter((src): src is string => Boolean(src));
   const storyImg = (i: number) => imgPool[i] ?? imgPool[0];
@@ -44,8 +42,8 @@ export default async function Home() {
           },
           {
             tag: "03 — Deliver",
-            title: "At your door, carbon-neutral",
-            body: "Dispatched in about 48 hours and shipped from a hub near you, so most orders travel domestically. Every order's footprint is measured and offset by default.",
+            title: "At your door in days",
+            body: "Dispatched in about 48 hours and shipped from the production hub nearest you, so most orders travel domestically rather than across the world.",
             image: storyImg(2),
           },
         ]
@@ -84,24 +82,19 @@ export default async function Home() {
         />
       )}
 
-      {/* bestsellers */}
+      {/* the catalogue — no sales yet, so nothing here claims to be a bestseller */}
       <section className="mx-auto max-w-[1400px] px-5 py-24 md:px-8">
         <SectionHeading
-          eyebrow="Best sellers"
-          title="Fan favourites"
+          eyebrow="New in"
+          title="Latest designs"
           action={
             <Button href="/shop" variant="outline" size="sm">
               View all
             </Button>
           }
         />
-        <ProductGrid className="mt-12" products={bestsellers} />
+        <ProductGrid className="mt-12" products={showcase} />
       </section>
-
-      {/* animated stats + press */}
-      <Stats />
-
-      <Testimonials />
 
       {/* FAQ accordion */}
       <FAQ />
@@ -118,10 +111,10 @@ export default async function Home() {
             />
             <p className="eyebrow">Join the list</p>
             <h2 className="display mx-auto mt-4 max-w-2xl text-4xl md:text-6xl">
-              Get 15% off your first {SITE.name} drop
+              Be first to see the next {SITE.name} drop
             </h2>
             <p className="mx-auto mt-4 max-w-md text-muted">
-              Early access to limited runs, restock alerts and members-only pricing.
+              One email when new designs land. No spam, unsubscribe any time.
             </p>
             <EmailCapture className="mx-auto mt-8 max-w-sm" />
           </div>

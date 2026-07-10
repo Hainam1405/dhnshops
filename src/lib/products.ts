@@ -54,13 +54,15 @@ export async function getFeaturedProducts(): Promise<Product[]> {
   return (await allProducts()).filter((p) => p.featured);
 }
 
-export async function getBestsellers(limit = 8): Promise<Product[]> {
-  const ranked = [...(await allProducts())].sort(
-    (a, b) =>
-      Number(b.badges.includes("Bestseller")) - Number(a.badges.includes("Bestseller")) ||
-      b.rating - a.rating,
-  );
-  return ranked.slice(0, limit);
+/**
+ * Products to showcase on the homepage and in cart recovery.
+ *
+ * Deliberately NOT "bestsellers": this shop has no sales history, so ranking by
+ * one would be a fabrication. Featured products lead, catalogue order follows.
+ */
+export async function getShowcaseProducts(limit = 8): Promise<Product[]> {
+  const all = await allProducts();
+  return [...all.filter((p) => p.featured), ...all.filter((p) => !p.featured)].slice(0, limit);
 }
 
 export async function getCategories(): Promise<Category[]> {

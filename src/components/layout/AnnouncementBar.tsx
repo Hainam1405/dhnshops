@@ -1,9 +1,9 @@
 import { Marquee } from "@/components/motion/Marquee";
 
 const MESSAGES = [
-  "Free carbon-neutral shipping over $75",
+  "Free shipping over $75",
   "Printed on demand at the hub nearest you",
-  "Numbered limited drops",
+  "Worldwide shipping",
   "30-day easy returns",
 ];
 

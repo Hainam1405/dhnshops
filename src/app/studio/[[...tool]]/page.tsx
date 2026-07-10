@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { notFound } from "next/navigation";
 import { NextStudio } from "next-sanity/studio";
 import { projectId } from "@/sanity/env";
 import config from "../../../../sanity.config";
@@ -43,6 +44,11 @@ function StudioNotConfigured() {
 }
 
 export default function StudioPage() {
-  if (!projectId) return <StudioNotConfigured />;
+  if (!projectId) {
+    // Locally this page is a useful setup guide. On the live storefront it is a
+    // public page announcing that the shop runs on sample data — hide it.
+    if (process.env.NODE_ENV === "production") notFound();
+    return <StudioNotConfigured />;
+  }
   return <NextStudio config={config} />;
 }

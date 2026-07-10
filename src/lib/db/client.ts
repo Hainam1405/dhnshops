@@ -16,10 +16,15 @@ export const hasDb = Boolean(process.env.DATABASE_URL);
 
 /**
  * Bump when `@/lib/data/seed` changes in a way that must reach an already-seeded
- * database. The sync below runs once per version, then never again — so products
- * created through /admin survive every deploy.
+ * database. The sync below runs once per version, then never again.
+ *
+ * What a bump does, precisely:
+ *  - products created through /admin are never touched, at any version;
+ *  - the seed products ARE overwritten with the seed's copy, so an /admin edit to
+ *    one of them is lost. Avoid bumping once staff are editing the catalogue —
+ *    change the product in /admin instead.
  */
-const SEED_VERSION = "2026-07-real-catalog";
+const SEED_VERSION = "2026-07-no-fabricated-reviews";
 
 /**
  * Ids from the original placeholder catalog (the placehold.co sample products).
@@ -89,6 +94,11 @@ async function bootstrap(): Promise<void> {
     CREATE TABLE IF NOT EXISTS app_meta (
       key text PRIMARY KEY,
       value text NOT NULL
+    )`;
+  await sql`
+    CREATE TABLE IF NOT EXISTS subscribers (
+      email text PRIMARY KEY,
+      created_at timestamptz NOT NULL DEFAULT now()
     )`;
 
   await syncSeed(sql);

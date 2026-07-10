@@ -39,7 +39,7 @@ export function Footer() {
             <h2 className="display text-2xl">{SITE.name}</h2>
             <p className="mt-4 max-w-xs text-sm text-muted">{SITE.tagline}</p>
             <p className="mt-8 font-mono text-xs uppercase tracking-widest text-muted">
-              Get 15% off your first drop
+              New designs, straight to your inbox
             </p>
             <EmailCapture className="mt-3 max-w-sm" />
           </div>

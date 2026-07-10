@@ -4,9 +4,11 @@
  */
 export const SITE = {
   name: "DHN Shop",
-  tagline: "Wearable objects from the near future.",
+  // Describe the catalogue that actually exists. Payment providers compare the
+  // site's description against the goods before approving an account.
+  tagline: "Graphic tees, printed to order.",
   description:
-    "DHN Shop is a print-on-demand apparel studio. Immersive designs, printed on demand and shipped from the hub nearest you.",
+    "DHN Shop is a print-on-demand apparel studio. Graphic tees — wildlife, cats, comedy and seasonal drops — printed when you order and shipped from the hub nearest you.",
   currency: "USD",
   /** Free shipping threshold, in USD cents. */
   freeShippingThreshold: 7500,

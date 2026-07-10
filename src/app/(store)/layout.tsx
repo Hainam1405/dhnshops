@@ -1,4 +1,4 @@
-import { getBestsellers } from "@/lib/products";
+import { getShowcaseProducts } from "@/lib/products";
 import { Providers } from "@/components/providers/Providers";
 import { AnnouncementBar } from "@/components/layout/AnnouncementBar";
 import { Nav } from "@/components/layout/Nav";
@@ -10,7 +10,7 @@ import { PageTransition } from "@/components/motion/PageTransition";
 import { ScrollProgress } from "@/components/motion/ScrollProgress";
 
 export default async function StoreLayout({ children }: { children: React.ReactNode }) {
-  const suggestions = await getBestsellers(6);
+  const suggestions = await getShowcaseProducts(6);
 
   return (
     <Providers>

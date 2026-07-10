@@ -264,7 +264,7 @@ export const LEGAL_DOCS: LegalDoc[] = [
       {
         heading: "Before you write",
         body: [
-          "If you're asking about an order, please include your order number — it looks like AE-XXXXXXX and is in your confirmation email. That lets us answer on the first reply instead of the third.",
+          "If you're asking about an order, please include your order number — it looks like DHN-XXXXXXX and is in your confirmation email. That lets us answer on the first reply instead of the third.",
         ],
       },
       {

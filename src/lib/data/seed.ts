@@ -1,4 +1,4 @@
-import type { Category, Product, ProductColor, ProductSize, Review } from "@/lib/types";
+import type { Category, Product, ProductColor, ProductSize } from "@/lib/types";
 
 /**
  * Live catalog.
@@ -6,6 +6,11 @@ import type { Category, Product, ProductColor, ProductSize, Review } from "@/lib
  * Every product ships with a real mockup stored in `/public/products`, so the
  * storefront renders identically in local dev and in production with no external
  * image host. Prices are integer USD cents.
+ *
+ * Products carry NO reviews and NO rating. This shop has not sold anything yet,
+ * so there is nothing honest to display — and inventing reviews (the sample
+ * catalog used to) is illegal in several markets and gets payment accounts
+ * closed. Ratings appear here only once real customers leave them.
  *
  * To add a product: drop the image in `public/products/<slug>.jpg` and add a
  * matching entry to DEFS below (or use the /admin dashboard, which persists to
@@ -17,57 +22,6 @@ function sizes(oos: string[] = []): ProductSize[] {
     label,
     inStock: !oos.includes(label),
   }));
-}
-
-const REVIEW_POOL: Omit<Review, "id">[] = [
-  {
-    author: "Maya R.",
-    rating: 5,
-    text: "Heavyweight cotton and the print is razor sharp. Fits true to size and the colour is exactly as shown.",
-    verified: true,
-    date: "2026-05-18",
-  },
-  {
-    author: "Dorian K.",
-    rating: 5,
-    text: "Shipped from a hub near me in 4 days. Quality is way above what I expected for print-on-demand.",
-    verified: true,
-    date: "2026-05-02",
-  },
-  {
-    author: "Priya S.",
-    rating: 4,
-    text: "Love the oversized fit. Took one star off only because I wish it came in more colours.",
-    verified: true,
-    date: "2026-04-21",
-  },
-  {
-    author: "Leo M.",
-    rating: 5,
-    text: "The graphic hasn't cracked or faded after a dozen washes. Buying two more.",
-    verified: true,
-    date: "2026-06-09",
-  },
-  {
-    author: "Sam T.",
-    rating: 5,
-    text: "So soft and comfy, and the design gets compliments every time I wear it.",
-    verified: true,
-    date: "2026-06-22",
-  },
-];
-
-function reviews(seed: number, count: number): Review[] {
-  return Array.from({ length: count }, (_, i) => {
-    const base = REVIEW_POOL[(seed + i) % REVIEW_POOL.length];
-    return { ...base, id: `rev-${seed}-${i}` };
-  });
-}
-
-function rating(list: Review[]) {
-  if (!list.length) return { rating: 0, reviewCount: 0 };
-  const avg = list.reduce((s, r) => s + r.rating, 0) / list.length;
-  return { rating: Math.round(avg * 10) / 10, reviewCount: list.length };
 }
 
 export const categories: Category[] = [
@@ -105,8 +59,6 @@ type Def = {
   tags: string[];
   twoSided?: boolean;
   oos?: string[];
-  reviewSeed: number;
-  reviewCount: number;
 };
 
 const DEFS: Def[] = [
@@ -121,8 +73,6 @@ const DEFS: Def[] = [
     color: { name: "Chambray", hex: "#b9d0dd" },
     badges: ["New"],
     tags: ["funny", "coquette", "comfort-colors", "raccoon"],
-    reviewSeed: 0,
-    reviewCount: 4,
   },
   {
     slug: "spooky-and-feral",
@@ -134,23 +84,19 @@ const DEFS: Def[] = [
     color: { name: "White", hex: "#f7f7f4" },
     badges: ["Halloween"],
     tags: ["halloween", "spooky", "cats", "funny"],
-    reviewSeed: 2,
-    reviewCount: 3,
   },
   {
     slug: "ghost-raccoon-iced-coffee",
     title: "Ghost Raccoon Iced Coffee Tee",
-    short: "Numbered Halloween drop on Espresso.",
+    short: "Moody Halloween drop on Espresso.",
     desc: "A sheet-ghost raccoon in sunglasses clutching an iced coffee and a candy pumpkin. Printed on a rich Espresso garment-dyed tee — the moody autumn staple you'll reach for all October.",
     price: 2899,
     compareAt: 3400,
     category: "seasonal",
     color: { name: "Espresso", hex: "#4b3a2f" },
-    badges: ["Halloween", "Bestseller"],
+    badges: ["Halloween", "Staff pick"],
     featured: true,
     tags: ["halloween", "coffee", "raccoon", "comfort-colors"],
-    reviewSeed: 3,
-    reviewCount: 4,
   },
   {
     slug: "grinch-christmas-stamps",
@@ -162,8 +108,6 @@ const DEFS: Def[] = [
     color: { name: "Ivory", hex: "#efe9dc" },
     badges: ["Holiday"],
     tags: ["christmas", "holiday", "cute", "festive"],
-    reviewSeed: 1,
-    reviewCount: 3,
   },
   {
     slug: "ghost-raccoon-pumpkins",
@@ -175,8 +119,6 @@ const DEFS: Def[] = [
     color: { name: "Blue Spruce", hex: "#3b5b53" },
     badges: ["Halloween"],
     tags: ["halloween", "raccoon", "pumpkin", "comfort-colors"],
-    reviewSeed: 0,
-    reviewCount: 3,
   },
   {
     slug: "sabrina-carpenter-vintage",
@@ -190,8 +132,6 @@ const DEFS: Def[] = [
     badges: ["Limited"],
     featured: true,
     tags: ["music", "bootleg", "vintage", "pop"],
-    reviewSeed: 3,
-    reviewCount: 4,
   },
   {
     slug: "kelly-clarkson-vintage",
@@ -203,8 +143,6 @@ const DEFS: Def[] = [
     color: { name: "Black", hex: "#1c1c1c" },
     badges: ["Limited"],
     tags: ["music", "bootleg", "vintage", "pop"],
-    reviewSeed: 1,
-    reviewCount: 3,
   },
   {
     slug: "tinkerbell-wings",
@@ -217,8 +155,6 @@ const DEFS: Def[] = [
     badges: ["New"],
     twoSided: true,
     tags: ["fairy", "two-sided", "comfort-colors", "cute"],
-    reviewSeed: 2,
-    reviewCount: 3,
   },
   {
     slug: "scarlet-season-doodle",
@@ -231,8 +167,6 @@ const DEFS: Def[] = [
     badges: ["New"],
     twoSided: true,
     tags: ["doodle", "two-sided", "trendy", "cute"],
-    reviewSeed: 4,
-    reviewCount: 3,
   },
   {
     slug: "morgan-wallen-vintage",
@@ -243,11 +177,9 @@ const DEFS: Def[] = [
     compareAt: 3600,
     category: "bootleg",
     color: { name: "Washed Black", hex: "#2b2b2b" },
-    badges: ["Bestseller", "Limited"],
+    badges: ["Staff pick", "Limited"],
     featured: true,
     tags: ["country", "music", "bootleg", "vintage"],
-    reviewSeed: 0,
-    reviewCount: 5,
   },
   {
     slug: "chris-brown-breezy-bowl-moss",
@@ -260,8 +192,6 @@ const DEFS: Def[] = [
     badges: ["Limited"],
     twoSided: true,
     tags: ["music", "tour", "two-sided", "rnb"],
-    reviewSeed: 1,
-    reviewCount: 3,
   },
   {
     slug: "chris-brown-breezy-bowl-blossom",
@@ -274,8 +204,6 @@ const DEFS: Def[] = [
     badges: ["Limited"],
     twoSided: true,
     tags: ["music", "tour", "two-sided", "rnb"],
-    reviewSeed: 3,
-    reviewCount: 3,
   },
   {
     slug: "bald-eagle-moon",
@@ -287,8 +215,6 @@ const DEFS: Def[] = [
     color: { name: "Washed Black", hex: "#2a2a2a" },
     badges: ["New"],
     tags: ["nature", "eagle", "vintage", "americana"],
-    reviewSeed: 2,
-    reviewCount: 3,
   },
   {
     slug: "vintage-pheasants",
@@ -300,8 +226,6 @@ const DEFS: Def[] = [
     color: { name: "Ivory", hex: "#efe9dc" },
     badges: [],
     tags: ["nature", "birds", "hunting", "watercolor"],
-    reviewSeed: 4,
-    reviewCount: 2,
   },
   {
     slug: "wolves-of-the-north",
@@ -312,11 +236,9 @@ const DEFS: Def[] = [
     compareAt: 3400,
     category: "tees",
     color: { name: "Charcoal", hex: "#3a3a3a" },
-    badges: ["Bestseller"],
+    badges: ["Staff pick"],
     featured: true,
     tags: ["nature", "wolves", "wilderness", "vintage"],
-    reviewSeed: 1,
-    reviewCount: 4,
   },
   {
     slug: "spider-bones",
@@ -328,8 +250,6 @@ const DEFS: Def[] = [
     color: { name: "Washed Black", hex: "#2b2b2b" },
     badges: ["New"],
     tags: ["gothic", "spider", "streetwear", "grunge"],
-    reviewSeed: 3,
-    reviewCount: 3,
   },
   {
     slug: "hot-girls-hit-curbs",
@@ -342,8 +262,6 @@ const DEFS: Def[] = [
     badges: ["New"],
     featured: true,
     tags: ["funny", "retro", "meme", "girly"],
-    reviewSeed: 0,
-    reviewCount: 4,
   },
   {
     slug: "i-eat-cement",
@@ -353,10 +271,8 @@ const DEFS: Def[] = [
     price: 2699,
     category: "tees",
     color: { name: "White", hex: "#f7f7f4" },
-    badges: ["Bestseller"],
+    badges: ["Staff pick"],
     tags: ["meme", "cats", "funny", "cursed"],
-    reviewSeed: 2,
-    reviewCount: 4,
   },
   {
     slug: "great-blue-heron",
@@ -368,8 +284,6 @@ const DEFS: Def[] = [
     color: { name: "Ivory", hex: "#efe9dc" },
     badges: [],
     tags: ["nature", "birds", "watercolor", "coastal"],
-    reviewSeed: 4,
-    reviewCount: 2,
   },
   {
     slug: "just-a-silly-goose",
@@ -379,11 +293,9 @@ const DEFS: Def[] = [
     price: 2699,
     category: "tees",
     color: { name: "Natural", hex: "#f2efe6" },
-    badges: ["Bestseller"],
+    badges: ["Staff pick"],
     featured: true,
     tags: ["funny", "goose", "cute", "summer"],
-    reviewSeed: 1,
-    reviewCount: 4,
   },
   {
     slug: "surf-day-duck",
@@ -395,8 +307,6 @@ const DEFS: Def[] = [
     color: { name: "White", hex: "#f7f7f4" },
     badges: ["New"],
     tags: ["funny", "duck", "summer", "cartoon"],
-    reviewSeed: 3,
-    reviewCount: 3,
   },
   {
     slug: "wild-waters-trout",
@@ -408,8 +318,6 @@ const DEFS: Def[] = [
     color: { name: "Ivory", hex: "#efe9dc" },
     badges: [],
     tags: ["nature", "fishing", "outdoors", "watercolor"],
-    reviewSeed: 0,
-    reviewCount: 3,
   },
   {
     slug: "blocky-knight-cat",
@@ -421,8 +329,6 @@ const DEFS: Def[] = [
     color: { name: "White", hex: "#f7f7f4" },
     badges: ["New"],
     tags: ["gaming", "cats", "cute", "fantasy"],
-    reviewSeed: 2,
-    reviewCount: 3,
   },
   {
     slug: "certified-freak-cat",
@@ -434,8 +340,6 @@ const DEFS: Def[] = [
     color: { name: "White", hex: "#f7f7f4" },
     badges: [],
     tags: ["meme", "cats", "funny", "cursed"],
-    reviewSeed: 4,
-    reviewCount: 3,
   },
   {
     slug: "later-pre-k-grader",
@@ -447,15 +351,12 @@ const DEFS: Def[] = [
     color: { name: "Denim", hex: "#4a5a72" },
     badges: ["New"],
     tags: ["kids", "school", "cute", "comfort-colors"],
-    reviewSeed: 1,
-    reviewCount: 2,
   },
 ];
 
 export const products: Product[] = DEFS.map((d) => {
   const image = `/products/${d.slug}.jpg`;
   const colors: ProductColor[] = [{ name: d.color.name, hex: d.color.hex, images: [image] }];
-  const rv = reviews(d.reviewSeed, d.reviewCount);
   return {
     _id: d.slug,
     slug: d.slug,
@@ -473,7 +374,8 @@ export const products: Product[] = DEFS.map((d) => {
     badges: d.badges,
     featured: Boolean(d.featured),
     gelatoProductUid: "", // fill in when Gelato is connected
-    reviews: rv,
-    ...rating(rv),
+    reviews: [],
+    rating: 0,
+    reviewCount: 0,
   };
 });

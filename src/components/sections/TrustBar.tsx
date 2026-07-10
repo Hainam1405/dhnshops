@@ -1,9 +1,10 @@
 import { Marquee } from "@/components/motion/Marquee";
 
+// Only claims we can actually stand behind. No offset programme, no hub count.
 const ITEMS = [
   { k: "01", title: "Printed on demand", body: "Nothing is made until you order it — zero deadstock, zero waste." },
-  { k: "02", title: "Made near you", body: "A global network prints in 32 countries, so most orders ship domestically." },
-  { k: "03", title: "Carbon-neutral", body: "Every order's shipping footprint is measured and offset by default." },
+  { k: "02", title: "Made near you", body: "Your order prints at the hub nearest you, so most parcels ship domestically." },
+  { k: "03", title: "Free shipping over $75", body: "Below that it's a flat $7, calculated at checkout before you pay." },
   { k: "04", title: "30-day returns", body: "Not in love with the fit? Send it back within 30 days, no questions." },
 ];
 

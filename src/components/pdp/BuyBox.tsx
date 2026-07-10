@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import type { Product, ProductColor } from "@/lib/types";
 import { cn, discountPercent, formatPrice } from "@/lib/utils";
+import { SITE } from "@/lib/config";
 import { useCart } from "@/lib/store/cart";
 import { StarRating } from "@/components/ui/StarRating";
 import { CheckIcon } from "@/components/ui/icons";
@@ -220,7 +221,7 @@ export function BuyBox({
           )}
         </button>
         <p className="mt-3 text-center text-xs text-muted">
-          Free carbon-neutral shipping over $75 · 30-day returns
+          Free shipping over {formatPrice(SITE.freeShippingThreshold)} · 30-day returns
         </p>
       </div>
 

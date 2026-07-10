@@ -5,9 +5,10 @@ import { motion } from "motion/react";
 import { Button } from "@/components/ui/Button";
 import { Magnetic } from "@/components/motion/Magnetic";
 import { SplitReveal } from "@/components/motion/SplitReveal";
-import { StarRating } from "@/components/ui/StarRating";
 import { CheckIcon } from "@/components/ui/icons";
 import { usePrefersReducedMotion } from "@/lib/animation/useReducedMotion";
+import { SITE } from "@/lib/config";
+import { formatPrice } from "@/lib/utils";
 
 const HeroScene = dynamic(() => import("@/components/three/HeroScene"), { ssr: false });
 
@@ -42,8 +43,8 @@ export function Hero() {
         </motion.p>
 
         <h1 className="display text-[13vw] leading-[0.82] md:text-[8.5vw]">
-          <SplitReveal text="Wear the" as="span" className="block" />
-          <SplitReveal text="near future" as="span" className="block text-accent" delay={0.12} />
+          <SplitReveal text="Graphic tees," as="span" className="block" />
+          <SplitReveal text="printed to order" as="span" className="block text-accent" delay={0.12} />
         </h1>
 
         <motion.p
@@ -52,7 +53,8 @@ export function Hero() {
           transition={{ delay: 0.5, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
           className="mt-8 max-w-md text-balance text-base text-muted"
         >
-          Heavyweight apparel, printed on demand at the hub nearest you and shipped carbon-neutral.
+          Heavyweight cotton, printed only once you order it — so nothing sits in a warehouse and
+          nothing goes to waste.
         </motion.p>
 
         <motion.div
@@ -63,38 +65,33 @@ export function Hero() {
         >
           <Magnetic>
             <Button href="/shop" size="lg">
-              Shop the drop
+              Shop all tees
             </Button>
           </Magnetic>
           <Magnetic>
-            <Button href="/collections/limited" size="lg" variant="outline">
-              Limited editions
+            <Button href="/collections/seasonal" size="lg" variant="outline">
+              Seasonal drops
             </Button>
           </Magnetic>
         </motion.div>
 
-        {/* social proof */}
+        {/* What we can actually promise — no ratings, no customer counts. */}
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.74, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-          className="mt-10 flex flex-wrap items-center gap-x-6 gap-y-3"
+          className="mt-10 flex flex-wrap items-center gap-x-5 gap-y-2 font-mono text-[11px] uppercase tracking-widest text-muted"
         >
-          <div className="flex items-center gap-2">
-            <StarRating rating={4.9} showValue={false} />
-            <span className="text-sm text-muted">
-              Loved by <span className="font-medium text-fg">12,000+</span> makers
+          {[
+            `Free shipping over ${formatPrice(SITE.freeShippingThreshold)}`,
+            "30-day returns",
+            "Printed on demand",
+          ].map((b) => (
+            <span key={b} className="inline-flex items-center gap-1.5">
+              <CheckIcon width={13} height={13} className="text-accent" />
+              {b}
             </span>
-          </div>
-          <span className="hidden h-4 w-px bg-line sm:block" />
-          <div className="flex flex-wrap items-center gap-x-5 gap-y-2 font-mono text-[11px] uppercase tracking-widest text-muted">
-            {["Carbon-neutral shipping", "30-day returns", "Printed on demand"].map((b) => (
-              <span key={b} className="inline-flex items-center gap-1.5">
-                <CheckIcon width={13} height={13} className="text-accent" />
-                {b}
-              </span>
-            ))}
-          </div>
+          ))}
         </motion.div>
       </div>
 

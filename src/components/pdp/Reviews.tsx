@@ -27,6 +27,21 @@ export function Reviews({
     return l;
   }, [reviews, sort, filter]);
 
+  // Nothing sold yet, nothing to average. Showing "0.0 / 5" beside a summary,
+  // star filters and a sort control would imply reviews exist and are all bad.
+  if (count === 0) {
+    return (
+      <section id="reviews" className="border-t border-line py-16">
+        <p className="eyebrow">Reviews</p>
+        <h2 className="mt-4 text-2xl font-medium tracking-tight">No reviews yet</h2>
+        <p className="mt-3 max-w-md text-muted">
+          This design hasn&rsquo;t been reviewed yet. Order one and you could be the first —
+          we&rsquo;ll email you after it arrives.
+        </p>
+      </section>
+    );
+  }
+
   return (
     <section id="reviews" className="border-t border-line py-16">
       <div className="grid gap-10 lg:grid-cols-[300px_1fr]">

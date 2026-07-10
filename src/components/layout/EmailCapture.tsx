@@ -5,52 +5,72 @@ import { ArrowIcon, CheckIcon } from "@/components/ui/icons";
 import { cn } from "@/lib/utils";
 
 /**
- * Email capture. On submit it just confirms locally — this is the hook point
- * for a welcome-series automation (Klaviyo/Omnisend) once you wire it up.
+ * Email capture. Posts to /api/subscribe, which persists the address.
+ *
+ * It used to discard the email and reply "check your inbox for 15% off" — no
+ * list, no email, no discount code. Never promise the visitor something the
+ * system cannot deliver.
  */
 export function EmailCapture({ className }: { className?: string }) {
   const [email, setEmail] = useState("");
-  const [done, setDone] = useState(false);
+  const [status, setStatus] = useState<"idle" | "sending" | "done">("idle");
+  const [error, setError] = useState<string | null>(null);
 
-  function submit(e: React.FormEvent) {
+  async function submit(e: React.FormEvent) {
     e.preventDefault();
-    if (!email) return;
-    // TODO(automation): POST to /api/subscribe -> Klaviyo/Omnisend welcome flow.
-    setDone(true);
+    if (!email || status === "sending") return;
+
+    setStatus("sending");
+    setError(null);
+    try {
+      const res = await fetch("/api/subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+      const json = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(json.error ?? "Could not sign you up. Try again.");
+      setStatus("done");
+    } catch (err) {
+      setStatus("idle");
+      setError(err instanceof Error ? err.message : "Could not sign you up. Try again.");
+    }
   }
 
-  if (done) {
+  if (status === "done") {
     return (
       <p className={cn("flex items-center gap-2 text-sm text-accent", className)}>
         <CheckIcon width={18} height={18} />
-        You&rsquo;re in — check your inbox for 15% off.
+        You&rsquo;re on the list.
       </p>
     );
   }
 
   return (
-    <form
-      onSubmit={submit}
-      className={cn(
-        "flex items-center gap-2 border-b border-line-strong pb-2 focus-within:border-accent",
-        className,
-      )}
-    >
-      <input
-        type="email"
-        required
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        placeholder="you@email.com"
-        className="w-full bg-transparent text-sm outline-none placeholder:text-muted"
-      />
-      <button
-        type="submit"
-        className="flex items-center gap-1.5 whitespace-nowrap font-mono text-xs uppercase tracking-widest text-fg hover:text-accent"
+    <div className={className}>
+      <form
+        onSubmit={submit}
+        className="flex items-center gap-2 border-b border-line-strong pb-2 focus-within:border-accent"
       >
-        Join
-        <ArrowIcon width={16} height={16} />
-      </button>
-    </form>
+        <input
+          type="email"
+          required
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="you@email.com"
+          disabled={status === "sending"}
+          className="w-full bg-transparent text-sm outline-none placeholder:text-muted disabled:opacity-60"
+        />
+        <button
+          type="submit"
+          disabled={status === "sending"}
+          className="flex items-center gap-1.5 whitespace-nowrap font-mono text-xs uppercase tracking-widest text-fg hover:text-accent disabled:opacity-60"
+        >
+          {status === "sending" ? "Joining…" : "Join"}
+          <ArrowIcon width={16} height={16} />
+        </button>
+      </form>
+      {error && <p className="mt-2 text-xs text-danger">{error}</p>}
+    </div>
   );
 }
