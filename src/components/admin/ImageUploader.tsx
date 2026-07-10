@@ -3,8 +3,8 @@
 import Image from "next/image";
 import { useState } from "react";
 import { CloseIcon } from "@/components/ui/icons";
-
-const MAX_MB = 15;
+import { shrinkImage } from "@/lib/admin/shrink-image";
+import { MAX_SOURCE_BYTES, MAX_UPLOAD_BYTES, MAX_UPLOAD_MB } from "@/lib/admin/upload";
 
 export function ImageUploader({
   value,
@@ -27,12 +27,19 @@ export function ImageUploader({
 
     try {
       for (const file of Array.from(files)) {
-        if (file.size > MAX_MB * 1024 * 1024) {
-          errors.push(`${file.name} is over ${MAX_MB}MB`);
+        if (file.size > MAX_SOURCE_BYTES) {
+          errors.push(`${file.name} is far too large to open`);
           continue;
         }
+
+        const prepared = await shrinkImage(file);
+        if (prepared.size > MAX_UPLOAD_BYTES) {
+          errors.push(`${file.name} is still over ${MAX_UPLOAD_MB}MB once compressed`);
+          continue;
+        }
+
         const fd = new FormData();
-        fd.append("file", file);
+        fd.append("file", prepared);
         try {
           const res = await fetch("/api/admin/upload", { method: "POST", body: fd });
           const json = await res.json().catch(() => ({}));
