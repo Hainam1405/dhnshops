@@ -1,6 +1,7 @@
 import { promises as fs } from "fs";
 import path from "path";
 import { getAllProducts } from "@/lib/products";
+import { SITE } from "@/lib/config";
 import { hasDb } from "@/lib/db/client";
 import * as db from "@/lib/db/orders";
 
@@ -15,8 +16,10 @@ import * as db from "@/lib/db/orders";
 const DATA_DIR = path.join(process.cwd(), "data");
 const FILE = path.join(DATA_DIR, "orders.json");
 
-export const FREE_SHIPPING_THRESHOLD = 7500; // cents
-export const FLAT_SHIPPING = 700; // cents
+// Single source of truth lives in @/lib/config so the cart, the server-side
+// total, and the published shipping policy can never quote different numbers.
+export const FREE_SHIPPING_THRESHOLD = SITE.freeShippingThreshold; // cents
+export const FLAT_SHIPPING = SITE.flatShipping; // cents
 
 export type OrderItem = {
   productId: string;

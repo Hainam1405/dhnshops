@@ -12,21 +12,20 @@ const COLUMNS = [
     ],
   },
   {
-    title: "Studio",
+    title: "Support",
     links: [
-      { label: "About", href: "/shop" },
-      { label: "Sustainability", href: "/shop" },
-      { label: "Print quality", href: "/shop" },
-      { label: "Manage catalog", href: "/admin" },
+      { label: "Contact", href: "/legal/contact" },
+      { label: "Shipping", href: "/legal/shipping" },
+      { label: "Returns & refunds", href: "/legal/returns" },
+      { label: "Email us", href: `mailto:${SITE.email}` },
     ],
   },
   {
-    title: "Support",
+    title: "Legal",
     links: [
-      { label: "Shipping & returns", href: "/shop" },
-      { label: "Size guide", href: "/shop" },
-      { label: "Track order", href: "/shop" },
-      { label: "Contact", href: `mailto:${SITE.email}` },
+      { label: "Terms of Service", href: "/legal/terms" },
+      { label: "Privacy Policy", href: "/legal/privacy" },
+      { label: "Manage catalog", href: "/admin" },
     ],
   },
 ];

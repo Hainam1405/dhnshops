@@ -9,8 +9,6 @@ import { formatPrice } from "@/lib/utils";
 import { SITE } from "@/lib/config";
 import { CheckIcon, CloseIcon, MinusIcon, PlusIcon } from "@/components/ui/icons";
 
-const FLAT_SHIPPING = 700; // cents, demo value until Gelato quotes are wired in
-
 export default function CartPage() {
   const mounted = useHasMounted();
   const items = useCart((s) => s.items);
@@ -24,7 +22,8 @@ export default function CartPage() {
   const [placing, setPlacing] = useState(false);
   const [checkoutError, setCheckoutError] = useState<string | null>(null);
 
-  const shipping = subtotal === 0 || subtotal >= SITE.freeShippingThreshold ? 0 : FLAT_SHIPPING;
+  // Mirrors the server-side calculation in @/lib/admin/orders — both read SITE.
+  const shipping = subtotal === 0 || subtotal >= SITE.freeShippingThreshold ? 0 : SITE.flatShipping;
   const total = subtotal + shipping;
 
   async function placeOrder(e: React.FormEvent<HTMLFormElement>) {

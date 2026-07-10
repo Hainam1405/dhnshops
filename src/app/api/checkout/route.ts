@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createOrder } from "@/lib/admin/orders";
+import { sendOrderEmails } from "@/lib/email";
 
 export const runtime = "nodejs";
 
@@ -44,6 +45,11 @@ export async function POST(req: Request) {
         image: String(i.image ?? ""),
       })),
     });
+
+    // The order is already persisted. sendOrderEmails swallows its own errors,
+    // so a mail outage can never turn a placed order into a checkout failure.
+    await sendOrderEmails(order);
+
     return NextResponse.json({ id: order.id, total: order.total });
   } catch (err) {
     return NextResponse.json(

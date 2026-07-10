@@ -48,7 +48,8 @@ function decodePayload(s: string): unknown {
   return JSON.parse(atob(b64));
 }
 
-function timingSafeEqual(a: string, b: string): boolean {
+/** Compare without leaking, through timing, how much of `a` matched `b`. */
+export function timingSafeEqual(a: string, b: string): boolean {
   if (a.length !== b.length) return false;
   let r = 0;
   for (let i = 0; i < a.length; i++) r |= a.charCodeAt(i) ^ b.charCodeAt(i);
